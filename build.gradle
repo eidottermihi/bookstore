@@ -27,4 +27,17 @@ subprojects {
     	}
 	}
 	
+	task testJenkins(dependsOn: test) {
+		description '=== Update the timestamp of the test results also if UP-TO-DATE ==='
+		doLast{
+			def timestamp = System.currentTimeMillis()
+			if(testResultsDir.exists()){
+				testResultsDir.eachFile { it.lastModified = timestamp }
+			}
+		}
+		check.dependsOn(testJenkins)
+	}
+ 
+	
+	
 }
