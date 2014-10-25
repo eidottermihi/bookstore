@@ -64,11 +64,11 @@ public class BookDaoTest {
   public void read() {
     Book book = bookDao.findByPrimaryKey(1L);
     assertNotNull(book);
-    assertEquals(new Long(1), book.getId());
+    assertEquals(Long.valueOf(1L), book.getId());
     assertEquals(0, book.getVersion());
     assertEquals("Titel1", book.getTitle());
     assertEquals(2014, book.getYear());
     assertNotNull(book.getAuthor());
-    assertEquals(new Long(1), book.getAuthor().getId());
+    assertEquals(Long.valueOf(1L), book.getAuthor().getId());
   }
 }

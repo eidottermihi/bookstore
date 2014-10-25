@@ -22,9 +22,10 @@ import javax.persistence.Version;
 @Access(AccessType.FIELD)
 @NamedQueries({
     @NamedQuery(name = Author.FIND_ALL, query = "from Author a"),
-    @NamedQuery(
-        name = Author.SEARCH,
-        query = "from Author a where (:firstname is null or a.firstname = :firstname) and (:lastname is null or a.lastname = :lastname) and (:mail is null or a.mail = :mail)") })
+    @NamedQuery(name = Author.SEARCH,
+        query = "from Author a where (:firstname is null or a.firstname = :firstname)"
+            + " and (:lastname is null or a.lastname = :lastname)"
+            + " and (:mail is null or a.mail = :mail)") })
 public class Author {
 
   public static final String FIND_ALL = "Author.FIND_ALL";
