@@ -36,7 +36,7 @@ import static org.junit.Assert.assertNotNull;
 public class AuthorDaoTest {
 
   @Autowired
-  private BookDao bookDao;
+  private BookDaoI bookDao;
 
   @Autowired
   private AuthorDao authorDao;
