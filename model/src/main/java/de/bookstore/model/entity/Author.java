@@ -1,7 +1,9 @@
-package de.bookstore.entity;
+package de.bookstore.model.entity;
 
 import java.util.Set;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,15 +11,25 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 @Entity
 @Table
+@Access(AccessType.FIELD)
+@NamedQueries({ @NamedQuery(name = Author.FIND_ALL, query = "from Author a") })
 public class Author {
+
+	public static final String FIND_ALL = "Author.FIND_ALL";
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	@Version
+	private int version;
 	@Column
 	private String firstname;
 	@Column
@@ -65,6 +77,14 @@ public class Author {
 
 	public void setBooks(Set<Book> books) {
 		this.books = books;
+	}
+
+	public int getVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
 	}
 
 }
