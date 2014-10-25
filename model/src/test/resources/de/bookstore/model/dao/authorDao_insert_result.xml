@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+
+  <Author id="1" version="0" firstname="Firstname" lastname="Lastname"
+    mail="firstname.lastname@mail.com" />
+
+</dataset>

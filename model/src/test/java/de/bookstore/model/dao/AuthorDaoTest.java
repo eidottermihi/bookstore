@@ -10,7 +10,6 @@ import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 
 import de.bookstore.model.config.ModelDevConfig;
 import de.bookstore.model.entity.Author;
-import de.bookstore.model.entity.Book;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +33,7 @@ import static org.junit.Assert.assertNotNull;
     DbUnitTestExecutionListener.class })
 @ActiveProfiles("dev")
 @Transactional
-public class BookDaoTest {
+public class AuthorDaoTest {
 
   @Autowired
   private BookDao bookDao;
@@ -43,32 +42,32 @@ public class BookDaoTest {
   private AuthorDao authorDao;
 
   @Test
-  @DatabaseSetup("bookDao_insert_setup.xml")
-  @ExpectedDatabase(value = "bookDao_insert_result.xml", table = "BOOK",
+  @ExpectedDatabase(value = "authorDao_insert_result.xml", table = "AUTHOR",
       assertionMode = DatabaseAssertionMode.NON_STRICT)
   public void insert() {
-    // Given
-    Author author = authorDao.findByPrimaryKey(1L);
     // When
-    Book book = new Book();
-    book.setTitle("Test_insert");
-    book.setYear(2014);
-    book.setAuthor(author);
-    Long id = bookDao.create(book);
+    Author author = new Author();
+    author.setFirstname("Firstname");
+    author.setLastname("Lastname");
+    author.setMail("firstname.lastname@mail.com");
+    Long id = authorDao.create(author);
     // Then
     assertNotNull(id);
   }
 
   @Test
-  @DatabaseSetup("bookDao_read_setup.xml")
+  @DatabaseSetup("authorDao_read_setup.xml")
   public void read() {
-    Book book = bookDao.findByPrimaryKey(1L);
-    assertNotNull(book);
-    assertEquals(new Long(1), book.getId());
-    assertEquals(0, book.getVersion());
-    assertEquals("Titel1", book.getTitle());
-    assertEquals(2014, book.getYear());
-    assertNotNull(book.getAuthor());
-    assertEquals(new Long(1), book.getAuthor().getId());
+    // When
+    Author author = authorDao.findByPrimaryKey(1L);
+    // Then
+    assertNotNull(author);
+    assertEquals(new Long(1), author.getId());
+    assertEquals(0, author.getVersion());
+    assertEquals("Vorname", author.getFirstname());
+    assertEquals("Nachname", author.getLastname());
+    assertEquals("some@mail.com", author.getMail());
+    assertNotNull(author.getBooks());
+    assertEquals(0, author.getBooks().size());
   }
 }
