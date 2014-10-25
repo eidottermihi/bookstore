@@ -9,14 +9,13 @@ import de.bookstore.model.entity.Book;
 @Repository
 public class BookDao extends AbstractGenericDao<Book, Long> {
 
-	@Override
-	public Long getPrimaryKey(Book persistentObject) {
-		return persistentObject.getId();
-	}
+  @Override
+  public Long getPrimaryKey(Book persistentObject) {
+    return persistentObject.getId();
+  }
 
-	public List<Book> findAll() {
-		return getEntityManager().createNamedQuery(Book.FIND_ALL, Book.class)
-				.getResultList();
-	}
+  public List<Book> findAll() {
+    return getEntityManager().createNamedQuery(Book.FIND_ALL, Book.class).getResultList();
+  }
 
 }

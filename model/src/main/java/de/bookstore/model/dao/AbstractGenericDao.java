@@ -10,56 +10,54 @@ import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractGenericDao<Entity, PrimaryKey extends Serializable>
-		implements GenericDao<Entity, PrimaryKey> {
-	protected final static Logger LOGGER = LoggerFactory
-			.getLogger(GenericDao.class);
+public abstract class AbstractGenericDao<EntityT, PrimaryKeyT extends Serializable> implements
+    GenericDao<EntityT, PrimaryKeyT> {
+  protected static final Logger LOGGER = LoggerFactory.getLogger(GenericDao.class);
 
-	protected final Class<Entity> entityClass;
+  protected final Class<EntityT> entityClass;
 
-	protected final Class<PrimaryKey> primaryKeyClass;
+  protected final Class<PrimaryKeyT> primaryKeyClass;
 
-	@PersistenceContext
-	private EntityManager entityManager;
+  @PersistenceContext
+  private EntityManager entityManager;
 
-	{
-		ParameterizedType type = (ParameterizedType) getClass()
-				.getGenericSuperclass();
-		Type[] actualTypeArguments = type.getActualTypeArguments();
+  {
+    ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
+    Type[] actualTypeArguments = type.getActualTypeArguments();
 
-		@SuppressWarnings("unchecked")
-		Class<Entity> entityClass = (Class<Entity>) actualTypeArguments[0];
-		this.entityClass = entityClass;
+    @SuppressWarnings("unchecked")
+    Class<EntityT> entityClass = (Class<EntityT>) actualTypeArguments[0];
+    this.entityClass = entityClass;
 
-		@SuppressWarnings("unchecked")
-		Class<PrimaryKey> primaryKey = (Class<PrimaryKey>) actualTypeArguments[1];
-		this.primaryKeyClass = primaryKey;
-	}
+    @SuppressWarnings("unchecked")
+    Class<PrimaryKeyT> primaryKey = (Class<PrimaryKeyT>) actualTypeArguments[1];
+    this.primaryKeyClass = primaryKey;
+  }
 
-	@Override
-	public PrimaryKey create(Entity newPersistentObject) {
-		LOGGER.debug("Persisting {}...", newPersistentObject);
-		entityManager.persist(newPersistentObject);
-		return getPrimaryKey(newPersistentObject);
-	}
+  @Override
+  public PrimaryKeyT create(EntityT newPersistentObject) {
+    LOGGER.debug("Persisting {}...", newPersistentObject);
+    entityManager.persist(newPersistentObject);
+    return getPrimaryKey(newPersistentObject);
+  }
 
-	@Override
-	public void update(Entity persistentObject) {
-		entityManager.merge(persistentObject);
-	}
+  @Override
+  public void update(EntityT persistentObject) {
+    entityManager.merge(persistentObject);
+  }
 
-	@Override
-	public void remove(Entity persistentObject) {
-		entityManager.remove(persistentObject);
-	}
+  @Override
+  public void remove(EntityT persistentObject) {
+    entityManager.remove(persistentObject);
+  }
 
-	@Override
-	public Entity findByPrimaryKey(PrimaryKey key) {
-		return entityManager.find(this.entityClass, key);
-	}
+  @Override
+  public EntityT findByPrimaryKey(PrimaryKeyT key) {
+    return entityManager.find(this.entityClass, key);
+  }
 
-	public EntityManager getEntityManager() {
-		return this.entityManager;
-	}
+  public EntityManager getEntityManager() {
+    return this.entityManager;
+  }
 
 }

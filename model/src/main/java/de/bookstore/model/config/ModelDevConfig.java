@@ -24,44 +24,43 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Profile("dev")
 public class ModelDevConfig {
 
-	@Autowired
-	private Environment env;
+  @Autowired
+  private Environment env;
 
-	@Bean
-	public DataSource dataSource() {
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName("org.hsqldb.jdbcDriver");
-		dataSource.setUrl("jdbc:hsqldb:mem:bookstore");
-		dataSource.setUsername("SA");
-		dataSource.setPassword("");
-		return dataSource;
-	}
+  @Bean
+  public DataSource dataSource() {
+    DriverManagerDataSource dataSource = new DriverManagerDataSource();
+    dataSource.setDriverClassName("org.hsqldb.jdbcDriver");
+    dataSource.setUrl("jdbc:hsqldb:mem:bookstore");
+    dataSource.setUsername("SA");
+    dataSource.setPassword("");
+    return dataSource;
+  }
 
-	@Bean
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-		em.setDataSource(dataSource());
-		em.setPackagesToScan("de.bookstore.model");
+  @Bean
+  public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+    LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+    em.setDataSource(dataSource());
+    em.setPackagesToScan("de.bookstore.model");
 
-		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-		em.setJpaVendorAdapter(vendorAdapter);
-		em.setJpaPropertyMap(jpaProperties());
-		return em;
-	}
+    HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+    em.setJpaVendorAdapter(vendorAdapter);
+    em.setJpaPropertyMap(jpaProperties());
+    return em;
+  }
 
-	@Bean
-	public PlatformTransactionManager transactionManager() {
-		JpaTransactionManager transactionManager = new JpaTransactionManager();
-		transactionManager.setEntityManagerFactory(entityManagerFactory()
-				.getObject());
-		return transactionManager;
-	}
+  @Bean
+  public PlatformTransactionManager transactionManager() {
+    JpaTransactionManager transactionManager = new JpaTransactionManager();
+    transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
+    return transactionManager;
+  }
 
-	public Map<String, String> jpaProperties() {
-		Map<String, String> props = new HashMap<String, String>();
-		props.put("hibernate.hbm2ddl.auto", "create-drop");
-		props.put("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
-		return props;
-	}
+  public Map<String, String> jpaProperties() {
+    Map<String, String> props = new HashMap<String, String>();
+    props.put("hibernate.hbm2ddl.auto", "create-drop");
+    props.put("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
+    return props;
+  }
 
 }

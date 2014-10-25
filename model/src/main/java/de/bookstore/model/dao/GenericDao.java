@@ -2,14 +2,14 @@ package de.bookstore.model.dao;
 
 import java.io.Serializable;
 
-public interface GenericDao<Entity, PrimaryKey extends Serializable> {
-	PrimaryKey create(Entity newPersistentObject);
+public interface GenericDao<EntityT, PrimaryKeyT extends Serializable> {
+  PrimaryKeyT create(EntityT newPersistentObject);
 
-	void update(Entity persistentObject);
+  void update(EntityT persistentObject);
 
-	void remove(Entity persistentObject);
+  void remove(EntityT persistentObject);
 
-	Entity findByPrimaryKey(PrimaryKey key);
+  EntityT findByPrimaryKey(PrimaryKeyT key);
 
-	PrimaryKey getPrimaryKey(Entity persistentObject);
+  PrimaryKeyT getPrimaryKey(EntityT persistentObject);
 }

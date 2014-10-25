@@ -8,6 +8,8 @@ subprojects {
 	
 	apply plugin: 'jacoco'
 	
+	apply plugin: 'checkstyle'
+	
 	repositories {
 		mavenCentral()
 	}
@@ -37,6 +39,11 @@ subprojects {
 		}
 		check.dependsOn(testJenkins)
 	}
+	
+	checkstyle {
+        configFile = new File(rootDir, 'config/checkstyle/checkstyle.xml')
+        toolVersion = '6.0'
+    }
  
 	
 	

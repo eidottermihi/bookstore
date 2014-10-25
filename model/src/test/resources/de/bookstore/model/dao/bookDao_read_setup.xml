@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-	<Author id="1" version="0" firstname="Vorname" lastname="Nachname"
-		mail="some@mail.com" />
-	<Book id="1" version="0" title="Titel1" year="2014" author_id="1" />
+  <Author id="1" version="0" firstname="Vorname" lastname="Nachname"
+    mail="some@mail.com" />
+  <Book id="1" version="0" title="Titel1" year="2014" author_id="1" />
 
 </dataset>

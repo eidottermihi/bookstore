@@ -23,68 +23,68 @@ import javax.persistence.Version;
 @NamedQueries({ @NamedQuery(name = Author.FIND_ALL, query = "from Author a") })
 public class Author {
 
-	public static final String FIND_ALL = "Author.FIND_ALL";
+  public static final String FIND_ALL = "Author.FIND_ALL";
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
-	@Version
-	private int version;
-	@Column
-	private String firstname;
-	@Column
-	private String lastname;
-	@Column
-	private String mail;
-	@OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private Set<Book> books;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Long id;
+  @Version
+  private int version;
+  @Column
+  private String firstname;
+  @Column
+  private String lastname;
+  @Column
+  private String mail;
+  @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  private Set<Book> books;
 
-	public Long getId() {
-		return id;
-	}
+  public Long getId() {
+    return id;
+  }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-	public String getFirstname() {
-		return firstname;
-	}
+  public String getFirstname() {
+    return firstname;
+  }
 
-	public void setFirstname(String firstname) {
-		this.firstname = firstname;
-	}
+  public void setFirstname(String firstname) {
+    this.firstname = firstname;
+  }
 
-	public String getLastname() {
-		return lastname;
-	}
+  public String getLastname() {
+    return lastname;
+  }
 
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
-	}
+  public void setLastname(String lastname) {
+    this.lastname = lastname;
+  }
 
-	public String getMail() {
-		return mail;
-	}
+  public String getMail() {
+    return mail;
+  }
 
-	public void setMail(String mail) {
-		this.mail = mail;
-	}
+  public void setMail(String mail) {
+    this.mail = mail;
+  }
 
-	public Set<Book> getBooks() {
-		return books;
-	}
+  public Set<Book> getBooks() {
+    return books;
+  }
 
-	public void setBooks(Set<Book> books) {
-		this.books = books;
-	}
+  public void setBooks(Set<Book> books) {
+    this.books = books;
+  }
 
-	public int getVersion() {
-		return version;
-	}
+  public int getVersion() {
+    return version;
+  }
 
-	public void setVersion(int version) {
-		this.version = version;
-	}
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
 }
