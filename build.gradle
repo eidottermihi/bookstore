@@ -50,6 +50,13 @@ subprojects {
     findbugs {
         ignoreFailures true
     }
+    
+    test{
+    	forkEvery 1
+    	beforeTest { descr ->
+        	logger.warn("Starting Test ${descr.className} : ${descr.name}")    
+    	}
+	}
  
 	
 	
