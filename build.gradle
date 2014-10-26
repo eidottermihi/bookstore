@@ -12,6 +12,8 @@ subprojects {
 	
 	apply plugin: 'findbugs'
 	
+	apply plugin: 'pmd'
+	
 	repositories {
 		mavenCentral()
 	}
@@ -23,12 +25,6 @@ subprojects {
 		compile 'org.slf4j:slf4j-log4j12:1.7.7'
 		
 		testCompile 'junit:junit:4.11'
-	}
-	
-	jacocoTestReport {
-    	reports {
-       		xml.enabled true
-    	}
 	}
 	
 	task testJenkins(dependsOn: test) {
