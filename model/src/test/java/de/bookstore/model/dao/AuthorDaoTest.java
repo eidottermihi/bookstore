@@ -62,7 +62,7 @@ public class AuthorDaoTest {
     Author author = authorDao.findByPrimaryKey(1L);
     // Then
     assertNotNull(author);
-    assertEquals(new Long(1), author.getId());
+    assertEquals(Long.valueOf(1), author.getId());
     assertEquals(0, author.getVersion());
     assertEquals("Vorname", author.getFirstname());
     assertEquals("Nachname", author.getLastname());
