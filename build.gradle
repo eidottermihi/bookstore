@@ -39,6 +39,10 @@ subprojects {
     classpath = sourceSets.integrationTest.runtimeClasspath
     reports.junitXml.destination = "$buildDir/integrationTest-results"
     reports.html.destination = "$buildDir/reports/integrationTest"
+    forkEvery 1
+    beforeTest { descr ->
+      logger.warn("Starting IntegrationTest ${descr.className} : ${descr.name}")
+    }
   }
 
   task testJenkins(dependsOn: test) {
