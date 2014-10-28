@@ -2,8 +2,6 @@ import org.gradle.api.Project;
 
 task wrapper(type: Wrapper) { gradleVersion = '2.1' }
 
-project.group = "de.bookstore"
-
 allprojects {
   apply from: "$rootDir/gradle/version.gradle"
 }
