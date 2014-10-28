@@ -12,6 +12,8 @@ task addBuildInfo {
     props.put("timestamp", project.buildTimestamp)
     props.store(buildInfoFile.newWriter(), null)
   }
+  // damit buildDir vorhanden ist
+  dependsOn classes
 }
 
 war {
