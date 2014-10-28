@@ -2,8 +2,8 @@
 
 // Artifactory
 binaryRepository {
-  url = "http://localhost:10000/artifactory"
-  username = "deployer"
-  password = "deployer"
+  url = "http://localhost:8081/artifactory"
+  username = "admin"
+  password = "password"
   name = "libs-release-local"
 }
