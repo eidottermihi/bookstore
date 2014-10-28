@@ -1,0 +1,9 @@
+// Umgebung für Build
+
+// Artifactory
+binaryRepository {
+  url = "http://localhost:10000/artifactory"
+  username = "deployer"
+  password = "deployer"
+  name = "libs-release-local"
+}

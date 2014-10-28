@@ -1,5 +1,7 @@
 apply plugin: 'jetty'
 
+apply plugin: 'maven-publish'
+
 dependencies {
 	compile project(':service')
 }
@@ -26,4 +28,27 @@ war {
   }
   
 }
+
+ext.fullRepoUrl = "$config.binaryRepository.url/$config.binaryRepository.name"
+
+
+publishing {
+  
+  publications {
+    webApp(MavenPublication) {
+      from components.web
+    }
+  }
+    
+  repositories {
+    maven {
+      url fullRepoUrl
+      credentials {
+          username = config.binaryRepository.username
+          password = config.binaryRepository.password
+      }
+    }
+  }
+}
+    
 
