@@ -1,5 +1,27 @@
+apply plugin: 'jetty'
+
 dependencies {
 	compile project(':service')
 }
 
-apply plugin: 'jetty'
+task addBuildInfo {
+  doLast {
+    def buildInfoFile = new File("$buildDir/buildInfo.properties")
+    Properties props = new Properties()
+    props.put("version", project.version.toString())
+    props.put("timestamp", project.buildTimestamp)
+    props.store(buildInfoFile.newWriter(), null)
+  }
+}
+
+war {
+  dependsOn addBuildInfo
+  baseName = "bookstore"
+  
+  from (buildDir) {
+    include 'buildInfo.properties'
+    into('WEB-INF/classes')
+  }
+  
+}
+

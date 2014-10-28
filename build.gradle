@@ -1,5 +1,9 @@
 task wrapper(type: Wrapper) { gradleVersion = '2.1' }
 
+allprojects {
+  apply from: "$rootDir/gradle/version.gradle"
+}
+
 subprojects {
 
   apply plugin: 'java'
@@ -11,7 +15,7 @@ subprojects {
   apply plugin: 'findbugs'
 
   apply plugin: 'pmd'
-  
+
   apply plugin: 'sonar-runner'
 
   repositories { mavenCentral() }
@@ -24,6 +28,9 @@ subprojects {
 
     testCompile 'junit:junit:4.11'
   }
+  
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
 
   sourceSets {
     integrationTest {
@@ -71,14 +78,14 @@ subprojects {
       logger.warn("Starting Test ${descr.className} : ${descr.name}")
     }
   }
-  
+
   sonarRunner {
     sonarProperties {
-        property "sonar.host.url", "http://localhost:9000"
-        property "sonar.jdbc.url", "jdbc:mysql://localhost:3306/sonar"
-        property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"
-        property "sonar.jdbc.username", "sonar"
-        property "sonar.jdbc.password", "123qwe"
+      property "sonar.host.url", "http://localhost:9000"
+      property "sonar.jdbc.url", "jdbc:mysql://localhost:3306/sonar"
+      property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"
+      property "sonar.jdbc.username", "sonar"
+      property "sonar.jdbc.password", "123qwe"
     }
-}
+  }
 }
