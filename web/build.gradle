@@ -1,10 +1,57 @@
-apply plugin: 'jetty'
+apply plugin: 'war'
+apply plugin: 'com.bmuschko.tomcat'
 
 apply plugin: 'maven-publish'
 
-dependencies {
-	compile project(':service')
+buildscript {
+  repositories {
+      jcenter()
+  }
+
+  dependencies {
+      classpath 'com.bmuschko:gradle-tomcat-plugin:2.0'
+  }
 }
+
+dependencies {
+
+  compile project(':service')
+
+  compile 'org.apache.wicket:wicket:6.17.0'
+  compile 'org.apache.wicket:wicket-spring:6.17.0'
+  compile 'de.agilecoders.wicket:wicket-bootstrap-core:0.9.5'
+
+  def tomcatVersion = '7.0.56'
+  tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
+      "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}"
+  tomcat("org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}") {
+    exclude group: 'org.eclipse.jdt.core.compiler', module: 'ecj'
+  }
+}
+
+sourceSets {
+  main {
+    java { srcDir 'src/main/java' }
+    resources {
+      srcDir 'src/main/resources'
+      // damit .html-Templates bei Wicket-Page liegen können
+      srcDir 'src/main/java'
+    }
+  }
+}
+
+tomcat {
+  httpPort 8090
+  httpsPort 8091
+  users {
+    user {
+      username = 'tomcat'
+      password = 's3cret'
+      roles = ['manager']
+    }
+  }
+}
+
 
 task addBuildInfo {
   doLast {
@@ -21,34 +68,32 @@ task addBuildInfo {
 war {
   dependsOn addBuildInfo
   baseName = "bookstore"
-  
+
   from (buildDir) {
     include 'buildInfo.properties'
     into('WEB-INF/classes')
   }
-  
 }
+
 
 ext.fullRepoUrl = "$config.binaryRepository.url/$config.binaryRepository.name"
 
 
 publishing {
-  
+
   publications {
-    webApp(MavenPublication) {
-      from components.web
-    }
+    webApp(MavenPublication) { from components.web }
   }
-    
+
   repositories {
     maven {
       url fullRepoUrl
       credentials {
-          username = config.binaryRepository.username
-          password = config.binaryRepository.password
+        username = config.binaryRepository.username
+        password = config.binaryRepository.password
       }
     }
   }
 }
-    
+
 
