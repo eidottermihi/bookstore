@@ -8,13 +8,36 @@
 		<filter-name>bookstore-wicket</filter-name>
 		<filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
 		<init-param>
-			<param-name>applicationClassName</param-name>
-			<param-value>de.bookstore.web.BookstoreWicketApplication</param-value>
-		</init-param>
+          <param-name>applicationFactoryClassName</param-name>
+          <param-value>
+              org.apache.wicket.spring.SpringWebApplicationFactory
+          </param-value>
+      </init-param>
+
 	</filter>
 	<filter-mapping>
 		<filter-name>bookstore-wicket</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+	
+	<context-param>
+		<param-name>contextClass</param-name>
+		<param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+	</context-param>
+	<context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>de.bookstore.web.config.WebConfig</param-value>
+    </context-param>
+    
+    <context-param>
+    	<param-name>spring.profiles.active</param-name>
+    	<param-value>dev</param-value>
+	</context-param>
 
+    <listener>
+        <listener-class>
+            org.springframework.web.context.ContextLoaderListener
+        </listener-class>
+    </listener>
+	
 </web-app>

@@ -19,7 +19,7 @@ dependencies {
 
   compile 'org.apache.wicket:wicket:6.17.0'
   compile 'org.apache.wicket:wicket-spring:6.17.0'
-  compile 'de.agilecoders.wicket:wicket-bootstrap-core:0.9.5'
+  compile 'org.springframework:spring-web:4.1.1.RELEASE'
 
   def tomcatVersion = '7.0.56'
   tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
@@ -41,8 +41,9 @@ sourceSets {
 }
 
 tomcat {
-  httpPort 8090
-  httpsPort 8091
+  httpPort 10080
+  httpsPort 10081
+  stopPort 10082
   users {
     user {
       username = 'tomcat'
