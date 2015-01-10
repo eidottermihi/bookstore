@@ -20,6 +20,9 @@ dependencies {
   compile 'org.apache.wicket:wicket:6.17.0'
   compile 'org.apache.wicket:wicket-spring:6.17.0'
   compile 'org.springframework:spring-web:4.1.1.RELEASE'
+  
+  compile 'org.seleniumhq.selenium:selenium-java:2.44.0'
+  compile 'org.seleniumhq.selenium:selenium-firefox-driver:2.44.0'
 
   def tomcatVersion = '7.0.56'
   tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",

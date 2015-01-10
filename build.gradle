@@ -2,9 +2,7 @@ import org.gradle.api.Project;
 
 task wrapper(type: Wrapper) { gradleVersion = '2.1' }
 
-allprojects {
-  apply from: "$rootDir/gradle/version.gradle"
-}
+allprojects { apply from: "$rootDir/gradle/version.gradle" }
 
 subprojects {
 
@@ -29,8 +27,9 @@ subprojects {
     compile 'org.slf4j:slf4j-log4j12:1.7.7'
 
     testCompile 'junit:junit:4.11'
+    
   }
-  
+
   sourceCompatibility = 1.8
   targetCompatibility = 1.8
 
@@ -38,6 +37,13 @@ subprojects {
     integrationTest {
       java.srcDir file("src/integTest/java")
       resources.srcDir file("src/integTest/resources")
+      compileClasspath = sourceSets.main.output + configurations.testRuntime
+      runtimeClasspath = output + compileClasspath
+    }
+
+    acceptanceTest {
+      java.srcDir file("src/acceptanceTest/java")
+      resources.srcDir file("src/acceptanceTest/resources")
       compileClasspath = sourceSets.main.output + configurations.testRuntime
       runtimeClasspath = output + compileClasspath
     }
@@ -53,6 +59,19 @@ subprojects {
     forkEvery 1
     beforeTest { descr ->
       logger.warn("Starting IntegrationTest ${descr.className} : ${descr.name}")
+    }
+  }
+
+  task acceptanceTest(type: Test){
+    description = 'Runs the acceptance tests.'
+    group = 'verification'
+    testClassesDir = sourceSets.acceptanceTest.output.classesDir
+    classpath = sourceSets.acceptanceTest.runtimeClasspath
+    reports.junitXml.destination = "$buildDir/acceptanceTest-results"
+    reports.html.destination = "$buildDir/reports/acceptanceTest"
+    forkEvery 1
+    beforeTest { descr ->
+      logger.warn("Starting AcceptanceTest ${descr.className} : ${descr.name}")
     }
   }
 
@@ -90,17 +109,15 @@ subprojects {
       property "sonar.jdbc.password", "123qwe"
     }
   }
-  
+
   task loadConfiguration {
     // lookup environment property, default to "test"
     def env = project.hasProperty("env") ? project.getProperty("env") : "test"
     logger.info "Loading configuration for environment '$env'...."
-    
+
     def configFile = file("$rootDir/gradle/environment.gradle")
     def parsedConfig = new ConfigSlurper().parse(configFile.toURL())
-    
-    allprojects {
-      ext.config = parsedConfig
-    }
+
+    allprojects { ext.config = parsedConfig }
   }
 }
