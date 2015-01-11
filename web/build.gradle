@@ -1,3 +1,10 @@
+import java.io.File;
+
+import org.gradle.api.DefaultTask;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.TaskAction;
+
 apply plugin: 'war'
 apply plugin: 'com.bmuschko.tomcat'
 
@@ -71,7 +78,7 @@ task addBuildInfo {
 
 war {
   dependsOn addBuildInfo
-  baseName = "bookstore"
+  baseName = "web"
 
   from (buildDir) {
     include 'buildInfo.properties'
@@ -99,5 +106,34 @@ publishing {
     }
   }
 }
+
+// Binary von Artifactory laden
+ext.downloadedArtifact = file("$buildDir/download/$war.archiveName")
+
+task downloadArtifact(type: BinaryDownload) {
+  ext {
+    repoPath = project.group.replaceAll("\\.", "/")
+    repoBaseArtifactName = 'web'
+    repoVersion = project.version.toString()
+    repoArtifact = war.archiveName
+    binaryUrl = "${config.binaryRepository.url}/simple/${config.binaryRepository.name}/${repoPath}/${repoBaseArtifactName}/${repoVersion}/${repoArtifact}"
+  }
+
+  sourceUrl = binaryUrl
+  targetBinary = downloadedArtifact
+}
+
+class BinaryDownload extends DefaultTask {
+  @Input
+  String sourceUrl
+  @OutputFile
+  File targetBinary
+  @TaskAction
+  void download() {
+    ant.get(src: sourceUrl, dest: targetBinary)
+  }
+}
+
+// Deployment mit Cargo
 
 
