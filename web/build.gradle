@@ -90,6 +90,22 @@ war {
   }
 }
 
+task acceptanceTest(type: Test){
+  description = 'Runs the acceptance tests.'
+  group = 'verification'
+  testClassesDir = sourceSets.acceptanceTest.output.classesDir
+  classpath = sourceSets.acceptanceTest.runtimeClasspath
+  reports.junitXml.destination = "$buildDir/acceptanceTest-results"
+  reports.html.destination = "$buildDir/reports/acceptanceTest"
+  systemProperty 'selenium.baseUrl',
+      "http://${config.server.hostname}:${config.server.port}/${config.server.context}/"
+  forkEvery 1
+  testLogging.showStandardStreams = true
+  beforeTest { descr ->
+    logger.warn("Starting AcceptanceTest ${descr.className} : ${descr.name}")
+  }
+}
+
 
 ext.fullRepoUrl = "$config.binaryRepository.url/$config.binaryRepository.name"
 

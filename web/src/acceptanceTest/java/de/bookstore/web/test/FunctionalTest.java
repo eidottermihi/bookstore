@@ -4,7 +4,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -16,7 +15,7 @@ public class FunctionalTest extends AbstractBookstoreTest {
   @Before
   public void setup() {
     driver = new FirefoxDriver();
-    String url = System.getenv("selenium.baseUrl");
+    String url = System.getProperty("selenium.baseUrl");
     driver.get(url);
   }
 

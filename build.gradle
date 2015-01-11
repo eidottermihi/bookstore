@@ -61,19 +61,6 @@ subprojects {
     }
   }
 
-  task acceptanceTest(type: Test){
-    description = 'Runs the acceptance tests.'
-    group = 'verification'
-    testClassesDir = sourceSets.acceptanceTest.output.classesDir
-    classpath = sourceSets.acceptanceTest.runtimeClasspath
-    reports.junitXml.destination = "$buildDir/acceptanceTest-results"
-    reports.html.destination = "$buildDir/reports/acceptanceTest"
-    forkEvery 1
-    beforeTest { descr ->
-      logger.warn("Starting AcceptanceTest ${descr.className} : ${descr.name}")
-    }
-  }
-
   task testJenkins(dependsOn: test) {
     description '=== Update the timestamp of the test results also if UP-TO-DATE ==='
     doLast{
