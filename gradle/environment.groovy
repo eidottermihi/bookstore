@@ -14,7 +14,7 @@ environments {
       hostname = 'localhost'
       port = 11080
       context = 'bookstore'
-      username = 'tomcat'
+      username = 'admin'
       password = 's3cret'
     }
   }
@@ -24,7 +24,7 @@ environments {
       hostname = 'localhost'
       port = 12080
       context = 'bookstoreuat'
-      username = 'tomcat'
+      username = 'admin'
       password = 's3cret'
     }
   }
@@ -34,7 +34,7 @@ environments {
       hostname = 'localhost'
       port = 13080
       context = 'bookstoreprod'
-      username = 'tomcat'
+      username = 'admin'
       password = 's3cret'
     }
   }

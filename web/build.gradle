@@ -7,18 +7,20 @@ import org.gradle.api.tasks.TaskAction;
 
 apply plugin: 'war'
 apply plugin: 'com.bmuschko.tomcat'
+apply plugin: 'com.bmuschko.cargo'
 
 apply plugin: 'maven-publish'
 
 buildscript {
-  repositories {
-      jcenter()
-  }
+  repositories { jcenter() }
 
   dependencies {
-      classpath 'com.bmuschko:gradle-tomcat-plugin:2.0'
+    classpath 'com.bmuschko:gradle-tomcat-plugin:2.0'
+    classpath 'com.bmuschko:gradle-cargo-plugin:2.0.3'
   }
 }
+
+configurations { tomcatAnt }
 
 dependencies {
 
@@ -27,7 +29,7 @@ dependencies {
   compile 'org.apache.wicket:wicket:6.17.0'
   compile 'org.apache.wicket:wicket-spring:6.17.0'
   compile 'org.springframework:spring-web:4.1.1.RELEASE'
-  
+
   compile 'org.seleniumhq.selenium:selenium-java:2.44.0'
   compile 'org.seleniumhq.selenium:selenium-firefox-driver:2.44.0'
 
@@ -37,6 +39,8 @@ dependencies {
   tomcat("org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}") {
     exclude group: 'org.eclipse.jdt.core.compiler', module: 'ecj'
   }
+
+  tomcatAnt 'org.apache.tomcat:tomcat-catalina-ant:7.0.39'
 }
 
 sourceSets {
@@ -110,7 +114,10 @@ publishing {
 // Binary von Artifactory laden
 ext.downloadedArtifact = file("$buildDir/download/$war.archiveName")
 
+task cleanDownloadDir(type: Delete) { delete "$buildDir/download" }
+
 task downloadArtifact(type: BinaryDownload) {
+  dependsOn cleanDownloadDir
   ext {
     repoPath = project.group.replaceAll("\\.", "/")
     repoBaseArtifactName = 'web'
@@ -135,5 +142,38 @@ class BinaryDownload extends DefaultTask {
 }
 
 // Deployment mit Cargo
+cargoDeployRemote.dependsOn downloadArtifact, cargoUndeployRemote
+
+ext.appContextStatus = {
+  String serverUrl = "http://${config.server.hostname}:${config.server.port}/manager/text"
+  ant.taskdef(name: 'list', classname: 'org.apache.catalina.ant.ListTask', classpath: configurations.tomcatAnt.asPath)
+  try {
+    ant.list(url: serverUrl, username: config.server.username, password: config.server.password, outputproperty: 'appContextStatus')
+    String appContextStatus = ant.properties.appContextStatus
+    return appContextStatus.contains("/${config.server.context}:running") || appContextStatus.contains("/${config.server.context}:stopped")
+  }
+  catch(Exception e) {
+    logger.error "Failed to connect to '$serverUrl': $e.message"
+    return false
+  }
+}
+
+cargoUndeployRemote { onlyIf appContextStatus }
+
+cargo {
+  containerId = "tomcat7x"
+  port = config.server.port
+
+  deployable {
+    file = downloadedArtifact
+    context = config.server.context
+  }
+
+  remote {
+    hostname = config.server.hostname
+    username = config.server.username
+    password = config.server.password
+  }
+}
 
 

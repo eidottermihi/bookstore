@@ -111,16 +111,22 @@ subprojects {
       property "sonar.jdbc.password", "123qwe"
     }
   }
+}
 
-  task loadConfiguration {
-    // lookup environment property, default to "test"
-    def env = project.hasProperty("env") ? project.getProperty("env") : "test"
-    logger.info "Loading configuration for environment '$env'...."
+task loadConfiguration {
+  // lookup environment property, default to "test"
+  def env = project.hasProperty("env") ? project.getProperty("env") : "test"
+  println "Loading configuration for environment '$env'...."
+  def configFile = file("$rootDir/gradle/environment.groovy")
+  def parsedConfig = new ConfigSlurper(env).parse(configFile.toURL())
 
-    def configFile = file("$rootDir/gradle/environment.gradle")
-    def parsedConfig = new ConfigSlurper().parse(configFile.toURL())
+  allprojects { ext.config = parsedConfig }
+}
 
-    allprojects { ext.config = parsedConfig }
+task printConfiguration {
+  doLast {
+    println "server.hostname: '$config.server.hostname'"
+    println "server.port: '$config.server.port'"
   }
 }
 
