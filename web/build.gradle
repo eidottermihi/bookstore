@@ -112,6 +112,23 @@ task acceptanceTest(type: Test){
   }
 }
 
+task smokeTest(type: Test){
+  description = 'Runs a smoke test that checks if version is deployed to environment'
+  group = 'verification'
+  testClassesDir = sourceSets.smokeTest.output.classesDir
+  classpath = sourceSets.smokeTest.runtimeClasspath
+  reports.junitXml.destination = "$buildDir/smokeTest-results"
+  reports.html.destination = "$buildDir/reports/smokeTest"
+  systemProperty 'selenium.baseUrl',
+      "http://${config.server.hostname}:${config.server.port}/${config.server.context}/"
+  systemProperty 'bookstore.version', project.version.toString()
+  forkEvery 1
+  testLogging.showStandardStreams = true
+  beforeTest { descr ->
+    logger.warn("Starting SmokeTest ${descr.className} : ${descr.name}")
+  }
+}
+
 
 ext.fullRepoUrl = "$config.binaryRepository.url/$config.binaryRepository.name"
 
@@ -212,7 +229,5 @@ cargo {
 //  ]
 //}
 
-task loadTest {
-  doLast { println "Faking some load tests because JMeter plugin not working with Gradle 2.x" }
-}
+task loadTest { doLast { println "Faking some load tests because JMeter plugin not working with Gradle 2.x" } }
 

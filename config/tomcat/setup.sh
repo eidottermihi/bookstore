@@ -8,3 +8,5 @@ echo "Run tomcat-uat..."
 docker run --name tomcat-uat -d -p 12080:8080 bookstore/tomcat
 echo "Run tomcat-prod..."
 docker run --name tomcat-prod -d -p 13080:8080 bookstore/tomcat
+echo "Run tomcat-load..."
+docker run --name tomcat-load -d -p 14080:8080 bookstore/tomcat

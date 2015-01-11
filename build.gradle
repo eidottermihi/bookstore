@@ -46,6 +46,13 @@ subprojects {
       compileClasspath = sourceSets.main.output + configurations.testRuntime
       runtimeClasspath = output + compileClasspath
     }
+    
+    smokeTest {
+      java.srcDir file("src/smokeTest/java")
+      resources.srcDir file("src/smokeTest/resources")
+      compileClasspath = sourceSets.main.output + configurations.testRuntime
+      runtimeClasspath = output + compileClasspath
+    }
   }
 
   task integrationTest(type: Test){

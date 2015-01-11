@@ -5,3 +5,5 @@ echo "Stopping tomcat-uat..."
 docker stop tomcat-uat
 echo "Stopping tomcat-prod..."
 docker stop tomcat-prod
+echo "Stopping tomcat-load..."
+docker stop tomcat-load

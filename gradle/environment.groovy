@@ -38,4 +38,14 @@ environments {
       password = 's3cret'
     }
   }
+
+  load {
+    server {
+      hostname = 'localhost'
+      port = 14080
+      context = 'bookstoreprod'
+      username = 'admin'
+      password = 's3cret'
+    }
+  }
 }
