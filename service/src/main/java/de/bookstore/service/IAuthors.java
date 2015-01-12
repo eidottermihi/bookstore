@@ -5,7 +5,7 @@ import java.util.List;
 import de.bookstore.model.entity.Author;
 
 /**
- * Service-Interface für Author.
+ * Service-Interface fÃ¼r Author.
  * 
  * @author Michael
  *

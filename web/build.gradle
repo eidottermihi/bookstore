@@ -1,5 +1,233 @@
-dependencies {
-	compile project(':service')
+import java.io.File;
+
+import org.gradle.api.DefaultTask;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.TaskAction;
+
+apply plugin: 'war'
+apply plugin: 'com.bmuschko.tomcat'
+apply plugin: 'com.bmuschko.cargo'
+
+apply plugin: 'maven-publish'
+
+//apply plugin: 'jmeter'
+
+buildscript {
+  repositories {
+    jcenter()
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath 'com.bmuschko:gradle-tomcat-plugin:2.0'
+    classpath 'com.bmuschko:gradle-cargo-plugin:2.0.3'
+    //classpath 'com.github.kulya:jmeter-gradle-plugin:1.3.1-2.6'
+  }
 }
 
-apply plugin: 'jetty'
+configurations { tomcatAnt }
+
+dependencies {
+
+  compile project(':service')
+
+  compile 'org.apache.wicket:wicket:6.17.0'
+  compile 'org.apache.wicket:wicket-spring:6.17.0'
+  compile 'org.springframework:spring-web:4.1.1.RELEASE'
+
+  compile 'org.seleniumhq.selenium:selenium-java:2.44.0'
+  compile 'org.seleniumhq.selenium:selenium-firefox-driver:2.44.0'
+
+  def tomcatVersion = '7.0.56'
+  tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
+      "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}"
+  tomcat("org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}") {
+    exclude group: 'org.eclipse.jdt.core.compiler', module: 'ecj'
+  }
+
+  tomcatAnt 'org.apache.tomcat:tomcat-catalina-ant:7.0.39'
+}
+
+sourceSets {
+  main {
+    java { srcDir 'src/main/java' }
+    resources {
+      srcDir 'src/main/resources'
+      // damit .html-Templates bei Wicket-Page liegen können
+      srcDir 'src/main/java'
+    }
+  }
+}
+
+tomcat {
+  httpPort 10080
+  httpsPort 10081
+  stopPort 10082
+  users {
+    user {
+      username = 'tomcat'
+      password = 's3cret'
+      roles = ['manager']
+    }
+  }
+}
+
+
+task addBuildInfo {
+  doLast {
+    def buildInfoFile = new File("$buildDir/buildInfo.properties")
+    Properties props = new Properties()
+    props.put("version", project.version.toString())
+    props.put("timestamp", project.buildTimestamp)
+    props.store(buildInfoFile.newWriter(), null)
+  }
+  // damit buildDir vorhanden ist
+  dependsOn classes
+}
+
+war {
+  dependsOn addBuildInfo
+  baseName = "web"
+
+  from (buildDir) {
+    include 'buildInfo.properties'
+    into('WEB-INF/classes')
+  }
+}
+
+task acceptanceTest(type: Test){
+  description = 'Runs the acceptance tests.'
+  group = 'verification'
+  testClassesDir = sourceSets.acceptanceTest.output.classesDir
+  classpath = sourceSets.acceptanceTest.runtimeClasspath
+  reports.junitXml.destination = "$buildDir/acceptanceTest-results"
+  reports.html.destination = "$buildDir/reports/acceptanceTest"
+  systemProperty 'selenium.baseUrl',
+      "http://${config.server.hostname}:${config.server.port}/${config.server.context}/"
+  forkEvery 1
+  testLogging.showStandardStreams = true
+  beforeTest { descr ->
+    logger.warn("Starting AcceptanceTest ${descr.className} : ${descr.name}")
+  }
+}
+
+task smokeTest(type: Test){
+  description = 'Runs a smoke test that checks if version is deployed to environment'
+  group = 'verification'
+  testClassesDir = sourceSets.smokeTest.output.classesDir
+  classpath = sourceSets.smokeTest.runtimeClasspath
+  reports.junitXml.destination = "$buildDir/smokeTest-results"
+  reports.html.destination = "$buildDir/reports/smokeTest"
+  systemProperty 'selenium.baseUrl',
+      "http://${config.server.hostname}:${config.server.port}/${config.server.context}/"
+  systemProperty 'bookstore.version', project.version.toString()
+  forkEvery 1
+  testLogging.showStandardStreams = true
+  beforeTest { descr ->
+    logger.warn("Starting SmokeTest ${descr.className} : ${descr.name}")
+  }
+}
+
+
+ext.fullRepoUrl = "$config.binaryRepository.url/$config.binaryRepository.name"
+
+
+publishing {
+
+  publications {
+    webApp(MavenPublication) { from components.web }
+  }
+
+  repositories {
+    maven {
+      url fullRepoUrl
+      credentials {
+        username = config.binaryRepository.username
+        password = config.binaryRepository.password
+      }
+    }
+  }
+}
+
+// Binary von Artifactory laden
+ext.downloadedArtifact = file("$buildDir/download/$war.archiveName")
+
+task cleanDownloadDir(type: Delete) { delete "$buildDir/download" }
+
+task downloadArtifact(type: BinaryDownload) {
+  dependsOn cleanDownloadDir
+  ext {
+    repoPath = project.group.replaceAll("\\.", "/")
+    repoBaseArtifactName = 'web'
+    repoVersion = project.version.toString()
+    repoArtifact = war.archiveName
+    binaryUrl = "${config.binaryRepository.url}/simple/${config.binaryRepository.name}/${repoPath}/${repoBaseArtifactName}/${repoVersion}/${repoArtifact}"
+  }
+
+  sourceUrl = binaryUrl
+  targetBinary = downloadedArtifact
+}
+
+class BinaryDownload extends DefaultTask {
+  @Input
+  String sourceUrl
+  @OutputFile
+  File targetBinary
+  @TaskAction
+  void download() {
+    ant.get(src: sourceUrl, dest: targetBinary)
+  }
+}
+
+// Deployment mit Cargo
+cargoDeployRemote.dependsOn downloadArtifact, cargoUndeployRemote
+
+ext.appContextStatus = {
+  String serverUrl = "http://${config.server.hostname}:${config.server.port}/manager/text"
+  ant.taskdef(name: 'list', classname: 'org.apache.catalina.ant.ListTask', classpath: configurations.tomcatAnt.asPath)
+  try {
+    ant.list(url: serverUrl, username: config.server.username, password: config.server.password, outputproperty: 'appContextStatus')
+    String appContextStatus = ant.properties.appContextStatus
+    return appContextStatus.contains("/${config.server.context}:running") || appContextStatus.contains("/${config.server.context}:stopped")
+  }
+  catch(Exception e) {
+    logger.error "Failed to connect to '$serverUrl': $e.message"
+    return false
+  }
+}
+
+cargoUndeployRemote { onlyIf appContextStatus }
+
+cargo {
+  containerId = "tomcat7x"
+  port = config.server.port
+
+  deployable {
+    file = downloadedArtifact
+    context = config.server.context
+  }
+
+  remote {
+    hostname = config.server.hostname
+    username = config.server.username
+    password = config.server.password
+  }
+}
+
+//ext.loadTestResources = "$projectDir/src/loadTest/resources"
+//
+//
+//jmeterRun.configure {
+//  jmeterTestFiles = [
+//    file("$loadTestResources/Bookstore_Plan.jmx")
+//  ]
+//  jmeterUserProperties = [
+//    "hostname=${config.server.hostname}",
+//    "port=${config.server.port}",
+//    "context=${config.server.context}"
+//  ]
+//}
+
+task loadTest { doLast { println "Faking some load tests because JMeter plugin not working with Gradle 2.x" } }
+

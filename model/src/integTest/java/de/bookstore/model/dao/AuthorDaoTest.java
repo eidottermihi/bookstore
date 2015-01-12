@@ -1,15 +1,9 @@
 package de.bookstore.model.dao;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import javax.transaction.Transactional;
-
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
-import com.github.springtestdbunit.annotation.ExpectedDatabase;
-import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
-
-import de.bookstore.model.config.ModelDevConfig;
-import de.bookstore.model.entity.Author;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,8 +16,14 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.TransactionDbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.ExpectedDatabase;
+import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
+
+import de.bookstore.model.config.ModelDevConfig;
+import de.bookstore.model.entity.Author;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { ModelDevConfig.class },
@@ -62,7 +62,7 @@ public class AuthorDaoTest {
     Author author = authorDao.findByPrimaryKey(1L);
     // Then
     assertNotNull(author);
-    assertEquals(new Long(1), author.getId());
+    assertEquals(Long.valueOf(1), author.getId());
     assertEquals(0, author.getVersion());
     assertEquals("Vorname", author.getFirstname());
     assertEquals("Nachname", author.getLastname());

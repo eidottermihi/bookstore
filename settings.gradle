@@ -1,1 +1,3 @@
 include "model", "service", "web"
+
+rootProject.name = "bookstore"
